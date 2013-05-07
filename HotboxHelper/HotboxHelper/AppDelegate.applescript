@@ -17,5 +17,13 @@ script AppDelegate
 		-- Insert code here to do any housekeeping before your application quits 
 		return current application's NSTerminateNow
 	end applicationShouldTerminate_
+    
+    on log_event(themessage)
+        set theLine to (do shell script ¬
+        "date  +'%Y-%m-%d %H:%M:%S'" as string) ¬
+        & " " & themessage
+        do shell script "echo " & theLine & ¬
+        " >> ~/Library/Logs/HotBoxHelper.log"
+    end log_event
 	
 end script
