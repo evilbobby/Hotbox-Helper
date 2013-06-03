@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		675CBCE7175C619A002CED52 /* NSWindow+MyriadHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 675CBCE6175C619A002CED52 /* NSWindow+MyriadHelpers.m */; };
 		67DE25F517383BE6000AE77A /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 67DE25F417383BE6000AE77A /* Cocoa.framework */; };
 		67DE25F717383BE6000AE77A /* AppleScriptObjC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 67DE25F617383BE6000AE77A /* AppleScriptObjC.framework */; };
 		67DE260117383BE6000AE77A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 67DE25FF17383BE6000AE77A /* InfoPlist.strings */; };
@@ -17,6 +18,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		675CBCE5175C619A002CED52 /* NSWindow+MyriadHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSWindow+MyriadHelpers.h"; path = "../NSWindow+MyriadHelpers.h"; sourceTree = "<group>"; };
+		675CBCE6175C619A002CED52 /* NSWindow+MyriadHelpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSWindow+MyriadHelpers.m"; path = "../NSWindow+MyriadHelpers.m"; sourceTree = "<group>"; };
 		67DE25F117383BE6000AE77A /* HotboxHelper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HotboxHelper.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		67DE25F417383BE6000AE77A /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		67DE25F617383BE6000AE77A /* AppleScriptObjC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppleScriptObjC.framework; path = System/Library/Frameworks/AppleScriptObjC.framework; sourceTree = SDKROOT; };
@@ -95,6 +98,8 @@
 		67DE25FD17383BE6000AE77A /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				675CBCE5175C619A002CED52 /* NSWindow+MyriadHelpers.h */,
+				675CBCE6175C619A002CED52 /* NSWindow+MyriadHelpers.m */,
 				67DE25FE17383BE6000AE77A /* HotboxHelper-Info.plist */,
 				67DE25FF17383BE6000AE77A /* InfoPlist.strings */,
 				67DE260217383BE6000AE77A /* main.m */,
@@ -187,6 +192,7 @@
 			files = (
 				67DE260317383BE6000AE77A /* main.m in Sources */,
 				67DE260917383BE6000AE77A /* AppDelegate.applescript in Sources */,
+				675CBCE7175C619A002CED52 /* NSWindow+MyriadHelpers.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

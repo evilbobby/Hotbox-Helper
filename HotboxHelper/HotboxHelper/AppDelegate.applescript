@@ -9,31 +9,175 @@
 script AppDelegate
 	property parent : class "NSObject"
     
-    
-    --pereferences window
-    property savefolderlocLabel : missing value
-    
+    --Preferences
+    property defaults : missing value
+    --Windows
+    property MainWindow : missing value
+	property MainView : missing value
+    property CacheWindow : missing value
+    property PreferencesWindow : missing value
+    property ReviseWindow : missing value
+    property doubleCheckWindow : missing value
+    property tempWindow : missing value
+    property existsWindow : missing value
+    --main window
+    property MainBar1 : missing value
+    property MainDetail1 : missing value
+    property ArchiveButton : missing value
+    property mainPauseButton : missing value
     --Cache folders
-    property Retrieve_folder : missing value
-    property PsDroplet_folder : missing value
-    property ImagePrep_folder : missing value
-    property RemapTilt_folder : missing value
-    property BuildSwf_folder : missing value
-    property Pretransfer_folder : missing value
-    property droplet_folder : missing value
+    property Retrieve_folder : null
+    property PsDroplet_folder : null
+    property ImagePrep_folder : null
+    property RemapTilt_folder : null
+    property BuildSwf_folder : null
+    property Pretransfer_folder : null
+    property dropletFolder : null
+    property HotboxHelper_folder : null
+    --Cache Window
+    property cacheIndicator : missing value
+    property cachecancelbutton : missing value
+    property cachepausebutton : missing value
+    property cachelabel : missing value
+    property cancelCache : false
+    property pauseCache : false
+    property cacheWait : 1
+    --Preferences Window
+    property savefolderlocLabel : missing value
+    property rawFolderloclabel : missing value
+    property drop1Indicator : missing value
+    property drop2Indicator : missing value
+    property drop3Indicator : missing value
+    property LogWindow : missing value
+    --Master State
+    property pauseUser : false
+    property CacheCleared : false
+    property lastTask : null
+    property meFinished : false
     --globals
     property initializing : true
     property drop1Name : "BuildSwf"
     property drop2Name : "PsDroplet"
     property drop3Name : "RemapTilt"
     property dropletsExist : null
-    --add these properties
-    property LogWindow : missing value
-    property drop1Indicator : missing value
-    property drop2Indicator : missing value
-    property drop3Indicator : missing value
+    property saveFolderloc : null
+    property rawFolderloc : null
+    property clearCacheTimer : 1
+    property ClearCacheCountDown : true
+    property Delay1 : 0.3
     
-	
+    (* ======================================================================
+                            Handlers for Processing!
+     ====================================================================== *)
+    
+    on StartClearCache()
+        --Use MyriadHelpers to show cache window as sheet
+        log_event("Clear Cache...")
+        tell CacheWindow to showOver_(MainWindow)
+        clearCache()
+    end StartClearCache
+    
+    --CLEAR CACHE HANDLER
+    on clearCache()
+        
+        --Make sure the cancel button was not pressed
+        if ClearCacheCountDown = true and cancelCache = false and pauseCache = false then
+            --Do 5 second countdown
+            log "Clear Cache..." & clearCacheTimer
+            tell cacheIndicator to setIntValue_(clearCacheTimer - 1)
+            tell cachelabel to setStringValue_("Preparing to Clear Cache...(" & (6 - clearCacheTimer) & ")")
+            set clearCacheTimer to clearCacheTimer + 1
+            if clearCacheTimer = 7 then
+                set ClearCacheCountDown to false
+                set clearCacheTimer to 1
+            end if
+            performSelector_withObject_afterDelay_("clearCache", missing value, cacheWait)
+        else if ClearCacheCountDown = false and cancelCache = false and pauseCache = false then
+            --After the coutdown we can now clear the cache
+            set CacheFolderList to {"Retrieve", "PsDroplet", "ImagePrep", "RemapTilt", "BuildSwf", "Pretransfer"}
+            tell cachelabel to setStringValue_("Clearing Cache..." & (item clearCacheTimer of CacheFolderList) as string)
+            log_event("Clear Cache...Clearing " & (item clearCacheTimer of CacheFolderList) as string)
+            --delete all files in folder
+            do shell script "rm -rf " & POSIX path of (HotboxHelper_folder & item clearCacheTimer of CacheFolderList & ":*" as string)
+            set clearCacheTimer to clearCacheTimer + 1
+            if clearCacheTimer = 7 then
+                set clearCacheTimer to 1
+                set ClearCacheCountDown to true
+                tell cachelabel to setStringValue_("Clearing Cache...Done!")
+                delay 1
+                --reset window
+                tell current application's NSApp to endSheet_(CacheWindow)
+                tell cacheIndicator to setIntValue_(0)
+                set CacheCleared to true
+                log_event("Clear Cache...Finished")
+            else
+                performSelector_withObject_afterDelay_("clearCache", missing value, 0.1)
+            end if
+        else if pauseCache = true and cancelCache = false then
+            --Pause clear cache
+            performSelector_withObject_afterDelay_("clearCache", missing value, 1)
+        else if cancelCache = true then
+            --End clear Cache
+            set clearCacheTimer to 1
+            set ClearCacheCountDown to true
+            tell cachelabel to setStringValue_("Clearing Cache...Canceled!")
+            set cancelCache to false
+            delay 1
+            --Reset window
+            tell current application's NSApp to endSheet_(CacheWindow)
+            tell cacheIndicator to setIntValue_(0)
+            tell cachelabel to setStringValue_("Preparing to Clear Cache...")
+            --try to reset the pause button
+            try
+                tell cachepausebutton to setState_(0)
+                set pauseCache to false
+            end try
+            --Go back to "Start" state
+            tell MainDetail1 to setStringValue_("Press Start")
+            tell MainBar1 to stopAnimation_(me)
+            tell mainPauseButton to setTitle_("Start")
+            log_event("Clear Cache...CANCELED BY USER")
+        end if
+        
+        --When the cache is cleared, begin searching.
+        if CacheCleared is true then
+            performSelector_withObject_afterDelay_("startSearch", missing value, 0.5)
+            set CacheCleared to false
+        end if
+    end ClearCache_
+    
+    on startSearch()
+        tell MainDetail1 to setStringValue_("Looking for Image...")
+        tell MainBar1 to startAnimation_(me)
+        log_event("Search Start...")
+        log_event("Looking for Image...")
+        searchFor()
+    end startSearch
+    
+    --WAIT FOR THE FIRST IMAGE IN CACHE
+    on searchFor()
+        set lastTask to "searchFor"
+        log "Looking for image..."
+        try
+            tell MainDetail1 to setStringValue_("Looking for Image...")
+            tell application "Finder" to set waitingforFirstimage to (every file in Retrieve_folder)
+            if (item 1 of waitingforFirstimage) exists then
+                set meFinished to true
+                log_event("Looking for image...Found!")
+            end if
+        end try
+        
+        if pauseUser = true then
+            performSelector_withObject_afterDelay_("mainPause", missing value, 0.1)
+            set pauseUser to false
+        else if meFinished = true then
+            performSelector_withObject_afterDelay_("Prepare", missing value, 1)
+            set meFinished to false
+        else
+            performSelector_withObject_afterDelay_("SearchFor", missing value, 0.5)
+        end if
+    end searchFor
+    
     (* ======================================================================
                         Default "Application will..." Handlers
      ====================================================================== *)
@@ -47,6 +191,12 @@ script AppDelegate
         checkCacheFolders_(me)
         --Check for Droplets
         checkDroplets_(me)
+        --Set/Get Preferences
+        tell current application's NSUserDefaults to set defaults to standardUserDefaults()
+        tell defaults to registerDefaults_({saveFolderloc:((path to desktop)as string),rawFolderloc:((path to desktop)as string)})
+        retrieveDefaults_(me)
+        --set pause button to "Start" in begining
+        tell mainPauseButton to setTitle_("Start")
         
         set initializing to false
 	end applicationWillFinishLaunching_
@@ -55,6 +205,86 @@ script AppDelegate
 		log_event("==========PROGRAM SHUTDOWN==========")
 		return current application's NSTerminateNow
 	end applicationShouldTerminate_
+    
+    (* ======================================================================
+                    Background Handlers for window/view control
+     ====================================================================== *)
+    
+    on pauseButton_(sender)
+        log_event("Main Button selected....")
+        --Figure out what state the button is in
+        if title of sender as string is "Start" then
+            --Make sure the droplets exist
+            checkDroplets_(me)
+            if droplet1exist of dropletsExist = false or droplet2exist of dropletsExist = false or droplet3exist of dropletsExist = false then
+                log_event("Droplet Missing!")
+                tell mainPauseButton to setState_(0)
+                display dialog "CAN NOT START: MISSING A DROPLET." &  "Load new droplets in the Preferences window."
+                return
+            end if
+            --If we still haven't started, clear cache then start searching
+            tell mainPauseButton to setState_(0)
+            tell mainPauseButton to setTitle_("Pause")
+            StartClearCache()
+            else if title of sender as string = "Pause" and state of sender as string = "1" then
+            --If we started then, pause the search
+            set pauseUser to true
+            log_event("User Request... Pause")
+            else if state of sender as string = "0" then
+            --If we're paused, resume searching
+            mainResume()
+        end if
+    end pauseButton_
+    
+    --RESUME THE MAIN PROCESSING
+    on mainResume()
+        tell mainPauseButton to setState_(0)
+        tell MainBar1 to startAnimation_(me)
+        set isPaused to false
+        log_event("Main Processing Resumed!")
+        performSelector_withObject_afterDelay_(lastTask, missing value, delay1)
+    end mainResume
+    
+    on mainPause()
+        tell MainBar1 to stopAnimation_(me)
+        tell MainDetail1 to setStringValue_("Paused")
+        set isPaused to true
+        log_event("Main Processing Paused!")
+    end mainPause
+    
+    on OpenPreferences_(sender)
+        --open preferences window
+        log_event("Open Preferences...")
+        updateSavefolderLocLabel()
+        updateRawfolderLocLabel()
+        PreferencesWindow's makeKeyAndOrderFront_(me)
+        log_event("Open Preferences...Finished")
+    end OpenPreferences_
+    
+    on CancelClearCacheButton_(sender)
+        --Use MyriadHelpers to close cache sheet
+        set cancelCache to true
+	end ClearCacheCancelButton_
+    
+    on PauseClearCacheButton_(sender)
+        --Pause the Clear Cache
+        if pauseCache = false then
+            log_event("Clear Cache...Paused")
+            set pauseCache to true
+        else
+            log_event("Clear Cache...Resumed")
+            set pauseCache to false
+        end if
+	end PauseCacheCancelButton_
+    
+    on ReviseNew_(sender)
+        --Open Revise/New Window
+        log_event("Revise-New window opened")
+        --Enable "Reshoot" buttons during breaks.
+        tell Revisebutton to setEnabled_(1)
+        
+        tell ReviseWindow to showOver_(MainWindow)
+    end ReviseNew_
     
     (* ======================================================================
                             Handlers for startup & shutdown!
@@ -66,10 +296,10 @@ script AppDelegate
         set CacheFolderList to {"Retrieve", "PsDroplet", "ImagePrep", "RemapTilt", "BuildSwf", "Pretransfer", "Droplets"}
         set CacheFolderLoc to ((path to library folder) & "Caches:" as string) as alias
         
-        --Roundhousehelper cache folder
+        --HotboxHelper cache folder
         try
             tell application "Finder" to make new folder at CacheFolderLoc with properties {name:"HotboxHelper"}
-            log_event("Cache Folder 'RoundHouseHelper' created at... " & CacheFolderLoc as string)
+            log_event("Cache Folder 'HotboxHelper' created at... " & CacheFolderLoc as string)
         end try
         set HotboxHelper_folder to (path to library folder) & "Caches:HotboxHelper:" as string
         
@@ -88,7 +318,7 @@ script AppDelegate
         set RemapTilt_folder to (HotboxHelper_folder & "RemapTilt:" as string) as alias
         set BuildSwf_folder to (HotboxHelper_folder & "BuildSwf:" as string) as alias
         set Pretransfer_folder to (HotboxHelper_folder & "Pretransfer:" as string) as alias
-        set droplet_folder to (HotboxHelper_folder & "Droplets:" as string)
+        set dropletFolder to (HotboxHelper_folder & "Droplets:" as string)
         
         log_event("Checking for Cache Folders...Finished")
     end checkCacheFolders_
@@ -110,6 +340,8 @@ script AppDelegate
             if initializing is true then log_event("Found " & drop1Name as string)
             tell drop1Indicator to setIntValue_(1)
         else
+            set droplet1exist of dropletsExist to false
+            if initializing is true then log_event("MISSING DROPLET " & drop1Name as string)
             tell drop1Indicator to setIntValue_(3)
         end if
         if dropFolderCont as text contains drop2Name then
@@ -118,6 +350,8 @@ script AppDelegate
             if initializing is true then log_event("Found " & drop2Name as string)
             tell drop2Indicator to setIntValue_(1)
         else
+            set droplet2exist of dropletsExist to false
+            if initializing is true then log_event("MISSING DROPLET " & drop2Name as string)
             tell drop2Indicator to setIntValue_(3)
         end if
         if dropFolderCont as text contains drop3Name then
@@ -126,10 +360,13 @@ script AppDelegate
             if initializing is true then log_event("Found " & drop3Name as string)
             tell drop3Indicator to setIntValue_(1)
         else
+            set droplet3exist of dropletsExist to false
+            if initializing is true then log_event("MISSING DROPLET " & drop3Name as string)
             tell drop3Indicator to setIntValue_(3)
         end if
         log_event("Checking for Droplets...Finished")
     end checkDroplets_
+    
     
     (* ======================================================================
                             Handlers for Preferences!
@@ -203,7 +440,7 @@ script AppDelegate
             set rawFolderloc to objectForKey_("rawFolderloc") as string
         end tell
         log_event("Save Folder Location: " & saveFolderloc)
-        log_event("Save Folder Location: " & rawFolderloc)
+        log_event("Raw Folder Location: " & rawFolderloc)
         log_event("Read in Preferences...Finished")
     end retrieveDefaults_
     
@@ -228,15 +465,15 @@ script AppDelegate
         if (the last character of newDropletLoc is ":") then set newDropletLoc to (text 1 thru -2 of newDropletLoc) as string
         
         --Check new droplet name and allow/disallow renaming of file
-        if buttonName = "Droplet 1" then
+        if buttonName = "BuildSwf" then
             if newDropName = drop1Name then set trueName to true
             set dropName to drop1Name
             if droplet1exist of dropletsExist is true then set removeDroplet to true
-            else if buttonName = "Droplet 2" then
+        else if buttonName = "PsDroplet" then
             if newDropName = drop2Name then set trueName to true
             set dropName to drop2Name
             if droplet2exist of dropletsExist is true then set removeDroplet to true
-            else if buttonName = "Droplet 3" then
+        else if buttonName = "RemapTilt" then
             if newDropName = drop3Name then set trueName to true
             set dropName to drop3Name
             if droplet3exist of dropletsExist is true then set removeDroplet to true
@@ -263,8 +500,7 @@ script AppDelegate
             set initializing to true
             checkDroplets_(me)
             set initializing to false
-            
-            on error errmsg
+        on error errmsg
             tell me to display dialog "Error when attempting to replace droplet"
             log_event("Add/New Droplet FAILED...")
         end try
