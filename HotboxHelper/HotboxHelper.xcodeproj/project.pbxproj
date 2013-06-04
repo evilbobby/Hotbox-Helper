@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		67062EE2175E3F2A00A111B6 /* hotbox_icon_v2.icns in Resources */ = {isa = PBXBuildFile; fileRef = 67062EE1175E3F2A00A111B6 /* hotbox_icon_v2.icns */; };
 		675CBCE7175C619A002CED52 /* NSWindow+MyriadHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 675CBCE6175C619A002CED52 /* NSWindow+MyriadHelpers.m */; };
 		67DE25F517383BE6000AE77A /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 67DE25F417383BE6000AE77A /* Cocoa.framework */; };
 		67DE25F717383BE6000AE77A /* AppleScriptObjC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 67DE25F617383BE6000AE77A /* AppleScriptObjC.framework */; };
@@ -18,6 +19,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		67062EE1175E3F2A00A111B6 /* hotbox_icon_v2.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = hotbox_icon_v2.icns; sourceTree = "<group>"; };
 		675CBCE5175C619A002CED52 /* NSWindow+MyriadHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSWindow+MyriadHelpers.h"; path = "../NSWindow+MyriadHelpers.h"; sourceTree = "<group>"; };
 		675CBCE6175C619A002CED52 /* NSWindow+MyriadHelpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSWindow+MyriadHelpers.m"; path = "../NSWindow+MyriadHelpers.m"; sourceTree = "<group>"; };
 		67DE25F117383BE6000AE77A /* HotboxHelper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HotboxHelper.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -51,6 +53,7 @@
 		67DE25E817383BE6000AE77A = {
 			isa = PBXGroup;
 			children = (
+				67062EE1175E3F2A00A111B6 /* hotbox_icon_v2.icns */,
 				67DE25FC17383BE6000AE77A /* HotboxHelper */,
 				67DE25F317383BE6000AE77A /* Frameworks */,
 				67DE25F217383BE6000AE77A /* Products */,
@@ -164,6 +167,7 @@
 				67DE260117383BE6000AE77A /* InfoPlist.strings in Resources */,
 				67DE260717383BE6000AE77A /* Credits.rtf in Resources */,
 				67DE260C17383BE6000AE77A /* MainMenu.xib in Resources */,
+				67062EE2175E3F2A00A111B6 /* hotbox_icon_v2.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
