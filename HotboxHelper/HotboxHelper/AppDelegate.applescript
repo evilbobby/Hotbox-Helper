@@ -829,7 +829,7 @@ script AppDelegate
             if droplet1exist of dropletsExist = false or droplet2exist of dropletsExist = false or droplet3exist of dropletsExist = false then
                 log_event("Droplet Missing!")
                 tell mainPauseButton to setState_(0)
-                display dialog "CAN NOT START: MISSING A DROPLET." &  "Load new droplets in the Preferences window."
+                display dialog "CAN NOT START: MISSING A DROPLET." &  "Load new droplets in the Preferences window." buttons ("Ok") default button 1 with icon (stop)
                 return
             end if
             --If we still haven't started, clear cache then start searching
@@ -1191,7 +1191,7 @@ script AppDelegate
             checkDroplets_(me)
             set initializing to false
         on error errmsg
-            tell me to display dialog "Error when attempting to replace droplet"
+            tell me to display dialog "Error when attempting to replace droplet" buttons ("Ok") default button 1 with icon (stop)
             log_event("Add/New Droplet FAILED...")
         end try
     end dropletButtons_
