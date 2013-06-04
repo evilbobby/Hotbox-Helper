@@ -86,6 +86,8 @@ script AppDelegate
     property DropletBuildswf : null
     property ImagePrep : null
     property Photoshop : "Adobe Photoshop CS6"
+    property ImagePrepIndicator : missing value
+    property Imageprepexists : false
     
     (* ======================================================================
                             Handlers for Processing!
@@ -321,7 +323,7 @@ script AppDelegate
         
         --When the cache is cleared, begin searching.
         if CacheCleared is true then
-            performSelector_withObject_afterDelay_("startSearch", missing value, 0.5)
+            performSelector_withObject_afterDelay_("prepareStart", missing value, 0.5)
             set CacheCleared to false
         end if
     end ClearCache_
@@ -363,10 +365,53 @@ script AppDelegate
         end try
     end checkFileState
     
+    --PREPARE TO START
+    on prepareStart()
+        log_event("Preparing to start...")
+        --Check for droplets
+        log_event("Preparing to start...Check for Droplets")
+        checkDroplets_(me)
+        if droplet1exist of dropletsExist is true and droplet2exist of dropletsExist is true and droplet3exist of dropletsExist is true then
+            log_event("Preparing to start...Droplets ok!")
+        else
+            log_event("Preparing to start...DROPLETS MISSING")
+            display dialog "A Droplet is missing, Please replace them in the peferences" buttons ("Ok") default button 1 with icon (stop)
+            performSelector_withObject_afterDelay_("returntoStart", missing value, 0.1)
+            return
+        end if
+        --Check for imageprep
+        log_event("Preparing to start...ImagePrep")
+        checkforImageprep()
+        if ImagePrepexists is true then
+            log_event("Preparing to start...ImagePrep OK!")
+        else
+            log_event("Preparing to start...IMAGEPREP MISSING")
+            display dialog "ImagePrep is missing, Please make sure ImagePrep exists in the 'Applications' Folder." buttons ("Ok") default button 1 with icon (stop)
+            performSelector_withObject_afterDelay_("returntoStart", missing value, 0.1)
+            return
+        end if
+        --Check for download folders
+        log_event("Preparing to start...Check Save-Raw Folders")
+        retrieveDefaults_(me)
+        try
+            set testsave to saveFolderloc as alias
+            set testraw to rawFolderloc as alias
+        on error errmsg
+            log_event("Preparing to start...SAVE-RAW FOLDER MISSING")
+            display dialog "The Save or Raw folder appears to be missing. Please make sure the folders set in preferences exist." buttons ("Ok") default button 1 with icon (stop)
+            performSelector_withObject_afterDelay_("returntoStart", missing value, 0.1)
+            return
+        end try
+        
+        log_event("Preparing to start...Done!")
+        performSelector_withObject_afterDelay_("startSearch", missing value, 0.1)
+    end prepareStart
+    
     --START SEARCHING
     on startSearch()
         tell MainDetail1 to setStringValue_("Looking for Image...")
         tell MainBar1 to startAnimation_(me)
+        tell MainBar1 to setIndeterminate_(true)
         tell mainNewbutton to setEnabled_(1)
         tell mainPauseButton to setTitle_("Pause")
         log_event("Search Start...")
@@ -754,6 +799,8 @@ script AppDelegate
         checkCacheFolders_(me)
         --Check for Droplets
         checkDroplets_(me)
+        --check for imageprep
+        checkforImageprep()
         --Set/Get Preferences
         tell current application's NSUserDefaults to set defaults to standardUserDefaults()
         tell defaults to registerDefaults_({saveFolderloc:((path to desktop)as string),rawFolderloc:((path to desktop)as string)})
@@ -855,7 +902,7 @@ script AppDelegate
     end reviseButtonPress_
     
     on archiveButtonPress_(sender)
-        areYouSure("Are you sure you want to archive?","")
+        areYouSure("Are you sure you want to archive?","doArchive")
     end archiveButtonPress_
     
     on areYouSure(message,nextHandler)
@@ -989,12 +1036,27 @@ script AppDelegate
             tell drop3Indicator to setIntValue_(3)
         end if
         
-        --Set imagePrep location as well
-        set ImagePrep to (dropletFolder & "ImagePrep.app" as string) as alias
-        
         log_event("Checking for Droplets...Finished")
     end checkDroplets_
     
+    --CHECK FOR IMAGE PREP
+    on checkforImageprep()
+        
+        --Set imagePrep location as well
+        set ImagePrepString to (path to applications folder) & "ImagePrep.app" as string
+        
+        try
+            set ImagePrep to ((path to applications folder) & "ImagePrep.app" as string) as alias
+            set ImagePrepexists to true
+            log_event("Found ImagePrep Application")
+            tell ImagePrepIndicator to setIntValue_(1)
+        on error errmsg
+            set ImagePrepexists to false
+            log_event("MISSING ImagePrep Application")
+            tell ImagePrepIndicator to setIntValue_(3)
+        end try
+        
+    end checkforImagePrep
     
     (* ======================================================================
                             Handlers for Preferences!
