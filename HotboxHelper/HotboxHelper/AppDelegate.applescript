@@ -76,7 +76,7 @@ script AppDelegate
     property clearCacheTimer : 1
     property ClearCacheCountDown : true
     property Delay1 : 0.3
-    property cacheWait : 0.1
+    property cacheWait : 1
     property CurrentImageNumber : null
     property ImagePrepTimeout : 0
     property swfName : null

@@ -213,7 +213,7 @@
 				<int key="NSWindowStyleMask">15</int>
 				<int key="NSWindowBacking">2</int>
 				<string key="NSWindowRect">{{158, 850}, {475, 161}}</string>
-				<int key="NSWTFlags">1954021376</int>
+				<int key="NSWTFlags">880279552</int>
 				<string key="NSWindowTitle">HotboxHelper</string>
 				<string key="NSWindowClass">NSWindow</string>
 				<nil key="NSViewClass"/>
@@ -387,7 +387,7 @@
 				</object>
 				<string key="NSScreenRect">{{0, 0}, {1920, 1178}}</string>
 				<string key="NSMaxSize">{10000000000000, 10000000000000}</string>
-				<bool key="NSWindowIsRestorable">YES</bool>
+				<bool key="NSWindowIsRestorable">NO</bool>
 			</object>
 			<object class="NSCustomObject" id="976324537">
 				<string key="NSClassName">AppDelegate</string>
@@ -720,7 +720,7 @@
 												<string key="NSFrame">{{279, 49}, {20, 18}}</string>
 												<reference key="NSSuperview" ref="364934238"/>
 												<reference key="NSWindow"/>
-												<reference key="NSNextKeyView" ref="75297670"/>
+												<reference key="NSNextKeyView" ref="909072786"/>
 												<string key="NSReuseIdentifierKey">_NS:9</string>
 												<bool key="NSEnabled">YES</bool>
 												<object class="NSLevelIndicatorCell" key="NSCell" id="1058679110">
@@ -758,41 +758,40 @@
 												</object>
 												<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
 											</object>
-											<object class="NSTextField" id="75297670">
+											<object class="NSTextField" id="909072786">
 												<reference key="NSNextResponder" ref="364934238"/>
 												<int key="NSvFlags">268</int>
 												<string key="NSFrame">{{62, 24}, {212, 17}}</string>
 												<reference key="NSSuperview" ref="364934238"/>
 												<reference key="NSWindow"/>
-												<reference key="NSNextKeyView" ref="572515357"/>
+												<reference key="NSNextKeyView" ref="97498833"/>
 												<string key="NSReuseIdentifierKey">_NS:1535</string>
 												<bool key="NSEnabled">YES</bool>
-												<object class="NSTextFieldCell" key="NSCell" id="399563203">
+												<object class="NSTextFieldCell" key="NSCell" id="881381823">
 													<int key="NSCellFlags">68157504</int>
 													<int key="NSCellFlags2">272630784</int>
 													<string key="NSContents">ImagePrep in Applications Folder</string>
 													<reference key="NSSupport" ref="563829712"/>
 													<string key="NSCellIdentifier">_NS:1535</string>
-													<reference key="NSControlView" ref="75297670"/>
+													<reference key="NSControlView" ref="909072786"/>
 													<reference key="NSBackgroundColor" ref="946074970"/>
 													<reference key="NSTextColor" ref="962159696"/>
 												</object>
 												<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
 											</object>
-											<object class="NSLevelIndicator" id="572515357">
+											<object class="NSLevelIndicator" id="97498833">
 												<reference key="NSNextResponder" ref="364934238"/>
 												<int key="NSvFlags">269</int>
 												<string key="NSFrame">{{279, 22}, {20, 18}}</string>
 												<reference key="NSSuperview" ref="364934238"/>
 												<reference key="NSWindow"/>
-												<reference key="NSNextKeyView"/>
 												<string key="NSReuseIdentifierKey">_NS:9</string>
 												<bool key="NSEnabled">YES</bool>
-												<object class="NSLevelIndicatorCell" key="NSCell" id="457178420">
+												<object class="NSLevelIndicatorCell" key="NSCell" id="529053278">
 													<int key="NSCellFlags">0</int>
 													<int key="NSCellFlags2">0</int>
 													<string key="NSCellIdentifier">_NS:9</string>
-													<reference key="NSControlView" ref="572515357"/>
+													<reference key="NSControlView" ref="97498833"/>
 													<double key="NSValue">1</double>
 													<double key="NSMaxValue">1</double>
 													<double key="NSWarningValue">2</double>
@@ -1984,7 +1983,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 					<object class="IBOutletConnection" key="connection">
 						<string key="label">ImagePrepIndicator</string>
 						<reference key="source" ref="976324537"/>
-						<reference key="destination" ref="572515357"/>
+						<reference key="destination" ref="97498833"/>
 					</object>
 					<int key="connectionID">702</int>
 				</object>
@@ -2238,8 +2237,8 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 							<reference ref="714442386"/>
 							<reference ref="5292901"/>
 							<reference ref="463878926"/>
-							<reference ref="75297670"/>
-							<reference ref="572515357"/>
+							<reference ref="909072786"/>
+							<reference ref="97498833"/>
 						</array>
 						<reference key="parent" ref="667162189"/>
 					</object>
@@ -2844,29 +2843,29 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">698</int>
-						<reference key="object" ref="75297670"/>
+						<reference key="object" ref="909072786"/>
 						<array class="NSMutableArray" key="children">
-							<reference ref="399563203"/>
+							<reference ref="881381823"/>
 						</array>
 						<reference key="parent" ref="364934238"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">699</int>
-						<reference key="object" ref="399563203"/>
-						<reference key="parent" ref="75297670"/>
+						<reference key="object" ref="881381823"/>
+						<reference key="parent" ref="909072786"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">700</int>
-						<reference key="object" ref="572515357"/>
+						<reference key="object" ref="97498833"/>
 						<array class="NSMutableArray" key="children">
-							<reference ref="457178420"/>
+							<reference ref="529053278"/>
 						</array>
 						<reference key="parent" ref="364934238"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">701</int>
-						<reference key="object" ref="457178420"/>
-						<reference key="parent" ref="572515357"/>
+						<reference key="object" ref="529053278"/>
+						<reference key="parent" ref="97498833"/>
 					</object>
 				</array>
 			</object>
