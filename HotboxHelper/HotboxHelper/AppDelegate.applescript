@@ -710,7 +710,6 @@ script AppDelegate
             duplicate items of BuildSwf_folder to Pretransfer_folder with replacing
             try
                 make new folder at saveFolderloc with properties {name:CurrentImageNumber}
-                set
             end try
         end tell
         
