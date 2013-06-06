@@ -51,7 +51,8 @@ script AppDelegate
     property LogWindow : missing value
     --DoubleCheckWindow
     property doubleCheckLabel : missing value
-    property doubleCheckHandler : null
+    property doubleCheckYesHandler : null
+    property doubleCheckNoHandler : null
     --Temp Progress Window
     property tempBar1 : missing value
     property tempDetail1 : missing value
@@ -65,6 +66,10 @@ script AppDelegate
     property isPaused : false
     property finishedProcessing : false
     property lastFolder : null
+    --Already exists window
+    property existsSelection : "Overwrite"
+    property existsNumber : missing value
+    property existsTextField : missing value
     --globals
     property initializing : true
     property drop1Name : "BuildSwf"
@@ -78,6 +83,7 @@ script AppDelegate
     property Delay1 : 0.3
     property cacheWait : 1
     property CurrentImageNumber : null
+    property OriginalImageNumber : null
     property ImagePrepTimeout : 0
     property swfName : null
     property PhotoshopFile : null
@@ -88,6 +94,9 @@ script AppDelegate
     property Photoshop : "Adobe Photoshop CS6"
     property ImagePrepIndicator : missing value
     property Imageprepexists : false
+    property files_exist : false
+    property NumberChanged : false
+    property saved : false
     
     (* ======================================================================
                             Handlers for Processing!
@@ -156,6 +165,8 @@ script AppDelegate
     
     --FIGURE OUT WHAT THE USER REQUEST WAS AND EXECUTE IT
     on doUserRequest()
+        --close the preview window
+        closeSwfPreview()
         if requestSel = "R" then
             log_event("User Request...Revise")
             performSelector_withObject_afterDelay_("startRevise", missing value, 0.1)
@@ -176,7 +187,7 @@ script AppDelegate
             open PhotoshopFile using AdobePhotoshopCS6
         end tell
         
-        areYouSure("Do you want to process the revised image?","processRevised")
+        areYouSure("Do you want to process the revised image?","processRevised",null)
         log_event("Revise...Ask user to continue")
     end startRevise
     
@@ -216,7 +227,7 @@ script AppDelegate
             tell application "Safari"
                 close (every window whose name is swfName)
             end tell
-            delay 1
+            delay 0.2
         end try
     end closeSWFPreview
     
@@ -413,6 +424,7 @@ script AppDelegate
         tell MainBar1 to startAnimation_(me)
         tell MainBar1 to setIndeterminate_(true)
         tell mainNewbutton to setEnabled_(1)
+        tell mainPauseButton to setEnabled_(1)
         tell mainPauseButton to setTitle_("Pause")
         log_event("Search Start...")
         log_event("Looking for Image...")
@@ -477,7 +489,8 @@ script AppDelegate
                 set theFile to name of ((item 1 of theContents) as alias)
             end tell
             set CurrentImageNumber to (text 1 thru ((offset of "." in theFile) - 1) of theFile) as string
-            if meFinished is false then updateMain("Download finished, getting carnumber...",1)
+            set OriginalImageNumber to CurrentImageNumber
+            if meFinished is false then updateMain("Download finished, getting CurrentImageNumber...",1)
             log_event("CurrentImageNumber: " & CurrentImageNumber)
             set meFinished to true
         end if
@@ -607,7 +620,7 @@ script AppDelegate
                 set ImagePrepTimeout to ImagePrepTimeout + 1
                 if ImagePrepTimeout = 15 then
                     --if it's taking too long ask the user to try again
-                    areYouSure("No Image Found. Re-open ImagePrep?","Step2FromStep3")
+                    areYouSure("No Image Found. Re-open ImagePrep?","Step2FromStep3",null)
                     set pauseUser to true
                     tell mainPauseButton to setState_(1)
                     set ImagePrepTimeout to 0
@@ -727,6 +740,8 @@ script AppDelegate
             tell ArchiveButton to setEnabled_(1)
             tell mainRevisebutton to setEnabled_(1)
             set meFinished to false
+            --diable the main pause button until we archive
+            tell mainPauseButton to setEnabled_(0)
         else if userRequest is true then
             performSelector_withObject_afterDelay_("doUserRequest", missing value, delay1)
             set userRequest to false
@@ -738,35 +753,102 @@ script AppDelegate
     (* ======================================================================
                                 Handlers for Archiving!
      ====================================================================== *)
-      
-    on doArchive()
+    
+    on startArchive()
+        --try to close the swf preview window
+        closeSwfPreview()
+        
+        set curTempMaxValue to 9
         log_event("Archiving...")
-        showTempProgress("Archiving...",1,0)
-        tell tempBar1 to setIndeterminate_(true)
-        tell tempBar1 to startAnimation_(me)
+        log_event("Archiving...Preparing")
+        showTempProgress("Preparing to archive current Scan...",curTempMaxValue,0)
+        performSelector_withObject_afterDelay_("CheckExists", missing value, 0.01)
+    end startArchive
+    
+    --GET THE CurrentImageNumber AND CHECK IF IT ALREADY EXISTS
+    on CheckExists()
+        
+        --Get the car Number (only if it isn't already set)
+        log_event("Archiving...CurrentImageNumber: " & CurrentImageNumber)
+        
+        --Check if files already exist
+        log_event("Archiving...Check if Images already exist")
+        tempProgressUpdate(1,"Checking if files already exists in save locations...")
+        try
+            tell application "Finder" to set Completed_folder_contents to (entire contents of ((saveFolderloc & CurrentImageNumber & ":" as string) as alias) as text)
+            if Completed_folder_contents contains "-edc-" or Completed_folder_contents contains "-edo-" or Completed_folder_contents contains "-top-" then set files_exist to true
+        end try
+        try
+            tell application "Finder" to set zip_folder_contents to (entire contents of (rawFolderloc as alias) as text)
+            if zip_folder_contents contains (CurrentImageNumber & ".zip" as string) then set files_exist to true
+        end try
+        
+        --if files exists ask the user, else continue archiving
+        if files_exist is true and NumberChanged is true then
+            log_event("Archiving...images exist")
+            log_event("Archiving...Number already changed, ask to overwrite")
+            set files_exist to false
+            set NumberChanged to false
+            hideTempProgress()
+            delay 0.3
+            areYouSure(CurrentImageNumber & " exists. overwrite anyways?","OverwriteResume","startArchive")
+        else if files_exist is true then
+            log_event("Archiving...images exist")
+            set files_exist to false
+            hideTempProgress()
+            delay 0.3
+            showFilesExistWindow()
+        else
+            log_event("Archiving...images do not exist")
+            performSelector_withObject_afterDelay_("doArchive", missing value, 0.01)
+        end if
+    end CheckExists
+    
+    on doArchive()
+        log_event("Archiving... Started")
         
         log_event("Archiving...Preparing files")
-        set zippath to rawFolderloc & CurrentImageNumber & ".zip" as string
+        tempProgressUpdate(1,"Renaming Files in Cache...")
+        delay 0.05
         tell application "Finder"
             set RemapTilt_ext to name extension of ((first item in RemapTilt_folder) as alias)
-            set name of ((first item in RemapTilt_folder) as alias) to CurrentImageNumber & "-FullResolution." & RemapTilt_ext
-            set name of ((first item in BuildSwf_folder) as alias) to CurrentImageNumber & ".swf"
-            duplicate items of RemapTilt_folder to Pretransfer_folder with replacing
-            duplicate items of BuildSwf_folder to Pretransfer_folder with replacing
-            try
-                make new folder at saveFolderloc with properties {name:CurrentImageNumber}
-            end try
+            set name of ((first item in RemapTilt_folder) as alias) to (CurrentImageNumber & "-FullResolution." & RemapTilt_ext as string)
+            set name of ((first item in BuildSwf_folder) as alias) to (CurrentImageNumber & ".swf" as string)
         end tell
         
+        --Move files to the correct folders
+        log_event("Archiving...move image from RemapTilt to Pretransfer")
+        tempProgressUpdate(1,"Move image from RemapTilt to Pretransfer Folder...")
+        delay 0.05
+        do shell script "cp -rf " & POSIX path of (RemapTilt_folder & "*" as string) & " " & POSIX path of Pretransfer_folder
+        log_event("Archiving...move SWF from BuildSwf to Pretransfer")
+        tempProgressUpdate(1,"Move SWF from BuildSwf folder to Pretransfer Folder...")
+        delay 0.05
+        do shell script "mv " & POSIX path of (BuildSwf_folder & "*" as string) & " " & POSIX path of Pretransfer_folder
+        
+        --Try to make folder at save location
+        try
+            tell app "Finder" to make new folder at (saveFolderloc as alias) with properties {name:CurrentImageNumber as string}
+            log_event("Archiving...Car Folder created")
+        on error errmsg
+            log_event("Archiving...Car Folder already exists")
+        end try
+        
         log_event("Archiving...Creating Zip")
-        delay 0.3
-        do shell script "zip -r -jr " & quoted form of POSIX path of (zippath) & " " & quoted form of POSIX path of (Pretransfer_folder)
-        delay 0.3
+        tempProgressUpdate(1,"Creating archive (zip) file...")
+        delay 0.1
+        try
+            set zippath to rawFolderloc & CurrentImageNumber & ".zip" as string
+            do shell script "zip -r -jr " & quoted form of POSIX path of (zippath) & " " & quoted form of POSIX path of (Pretransfer_folder)
+            set saved to true
+        end try
+        delay 0.1
         
         log_event("Archiving...Resizing file")
+        tempProgressUpdate(1,"Resizing final Image...")
         tell application "Finder"
-            set name of ((first item in RemapTilt_folder) as alias) to CurrentImageNumber & "-int.UPLOADLARGE." & RemapTilt_ext
-            set resize_image to (RemapTilt_folder & CurrentImageNumber & "-int.UPLOADLARGE." & RemapTilt_ext as string) as alias
+            set name of ((first item in RemapTilt_folder) as alias) to CurrentImageNumber & "-int.UPLOADLARGE.Temp" & RemapTilt_ext
+            set resize_image to (RemapTilt_folder & CurrentImageNumber & "-int.UPLOADLARGE.Temp" & RemapTilt_ext as string) as alias
             tell application "Image Events"
                 launch
                 set this_image to open resize_image
@@ -774,17 +856,45 @@ script AppDelegate
                 save this_image in (RemapTilt_folder & CurrentImageNumber & "-int.UPLOADLARGE.jpg" as string) as JPEG
                 close this_image
             end tell
-            delete resize_image
-            try
-                duplicate items of RemapTilt_folder to ((saveFolderloc & CurrentImageNumber as string) as alias) with replacing
-            end try
         end tell
         
-        hideTempProgress()
-        tell tempBar1 to setIndeterminate_(false)
-        log_event("Archiving...Done!")
-        performSelector_withObject_afterDelay_("StartClearCache", missing value, 0.3)
+        --remove the temp file
+        log_event("Archiving...Remove temporary files")
+        tempProgressUpdate(1,"Remove temporary files...")
+        delay 0.05
+        do shell script "rm -rf " & quoted form of POSIX path of resize_image
+        
+        --transfer the final image
+        log_event("Archiving...Transfer final image to save folder")
+        tempProgressUpdate(1,"Transfer final image to save folder...")
+        delay 0.05
+        do shell script "mv " & POSIX path of (RemapTilt_folder & "*" as string) & " " & POSIX path of (saveFolderloc & CurrentImageNumber as string)
+        
+        performSelector_withObject_afterDelay_("doneArchive", missing value, 0.01)
     end doArchive
+    
+    --FINISHED!
+    on doneArchive()
+        set CurrentImageNumber to null
+        set OriginalImageNumber to null
+        set overwrite to false
+        set NumberChanged to false
+        tempProgressUpdate(1,"Finished Archiving.")
+        log_event("Archiving...Done!")
+        delay 1.5
+        hideTempProgress()
+        --if the zip saved sucessfully then clear the cache, otherwise let the user try again
+        if saved = true then
+            performSelector_withObject_afterDelay_("StartClearCache", missing value, 0.1)
+        end if
+        --reset saved for next use
+        set saved to false
+    end doneArchive
+    
+    on OverwriteResume()
+        tell tempWindow to showOver_(MainWindow)
+        performSelector_withObject_afterDelay_("doArchive", missing value, 0.3)
+    end OverwriteResume
         
     (* ======================================================================
                         Default "Application will..." Handlers
@@ -894,35 +1004,41 @@ script AppDelegate
 	end PauseCacheCancelButton_
     
     on newButtonPress_(sender)
-        areYouSure("Are you sure you want to start over?","requestNew")
+        areYouSure("Are you sure you want to start over?","requestNew",null)
     end newButtonPress_
     
     on reviseButtonPress_(sender)
-        areYouSure("Are you sure you want to revise the image?","requestRevise")
+        areYouSure("Are you sure you want to revise the image?","requestRevise",null)
     end reviseButtonPress_
     
     on archiveButtonPress_(sender)
-        areYouSure("Are you sure you want to archive?","doArchive")
+        areYouSure("Are you sure you want to archive?","startArchive",null)
     end archiveButtonPress_
     
-    on areYouSure(message,nextHandler)
+    on areYouSure(message,yesHandler,noHandler)
         tell doubleCheckLabel to setStringValue_(message)
-        set doubleCheckHandler to nextHandler
+        set doubleCheckYesHandler to yesHandler
+        set doubleCheckNoHandler to noHandler
         tell doubleCheckWindow to showOver_(MainWindow)
-        log_event("Are you sure..." & nextHandler)
+        log_event("Are you sure..." & message)
     end areYouSure
     
     on doubleCheckYes_(sender)
         tell current application's NSApp to endSheet_(doubleCheckWindow)
-        performSelector_withObject_afterDelay_(doubleCheckHandler, missing value, 0.1)
+        if doubleCheckYesHandler is not null then
+            performSelector_withObject_afterDelay_(doubleCheckYesHandler, missing value, 1)
+        end if
         log_event("Are you sure...Yes")
-        set doubleCheckHandler to null
+        set doubleCheckYesHandler to null
     end doubleCheckYes_
     
     on doubleCheckNo_(sender)
         tell current application's NSApp to endSheet_(doubleCheckWindow)
+        if doubleCheckNoHandler is not null then
+            performSelector_withObject_afterDelay_(doubleCheckNoHandler, missing value, 1)
+        end if
         log_event("Are you sure...No")
-        set doubleCheckHandler to null
+        set doubleCheckNoHandler to null
     end doubleCheckNo_
     
     on showTempProgress(tempDetail,tempMaxValue,tempValue)
@@ -950,9 +1066,59 @@ script AppDelegate
         end if
     end tempProgressUpdate
     
-    on nextStep_(sender)
-        set meFinished to true
-    end nextStep_
+    on showFilesExistWindow()
+        log_event("Car Number exists...")
+        set existsNumber to CurrentImageNumber as string
+        tell existsTextField to setStringValue_(CurrentImageNumber)
+        tell existsWindow to showOver_(MainWindow)
+        log_event("Car Number exists...opened")
+    end showFilesExistWindow
+    
+    on closeFilesExistWindow()
+        tell current application's NSApp to endSheet_(existsWindow)
+        log_event("Car Number exists...closed")
+    end closeFilesExistWindow
+    
+    on cancelFilesExist_(sender)
+        log_event("Car Number exists...user canceled")
+        closeFilesExistWindow()
+        tell ArchiveButton to setEnabled_(1)
+    end calcelFilesExist_
+    
+    on continueFilesExist_(sender)
+        log_event("Car Number exists...user continue")
+        --Check what the user indicated to do via radio buttons
+        if existsSelection as string = "Overwrite" then
+            log_event("Car Number exists...Overwrite")
+            --set overwrite
+            set overwrite to true
+            set CurrentImageNumber to OriginalImageNumber
+            --move on to next step and overwrite
+            closeFilesExistWindow()
+            delay 0.3
+            --ask the user if they are sure
+            areYouSure("Are you sure you wish to overwrite " & CurrentImageNumber & "?","OverwriteResume","startArchive")
+        else if existsSelection as string = "Change Car Number:" then
+            --if the number didn't change let the user know and don't do anything
+            if existsNumber = CurrentImageNumber then
+                display dialog "To archive with a different file number, you must change the file number in the text field" buttons ("Ok") default button 1 with icon (2)
+                return
+            end if
+            log_event("Car Number exists...Change number to " & existsNumber as string)
+            set CurrentImageNumber to existsNumber as string
+            set NumberChanged to true
+            --Try again with new car number
+            closeFilesExistWindow()
+            delay 0.3
+            performSelector_withObject_afterDelay_("startArchive", missing value, 0.01)
+        end if
+    end continueFilesExist_
+    
+    on forceArchive_(sender)
+        set CurrentImageNumber to 1234567890 as string
+        set OriginalImageNumber to CurrentImageNumber
+        performSelector_withObject_afterDelay_("startArchive", missing value, 0.01)
+    end forceArchive_
     
     (* ======================================================================
                             Handlers for startup & shutdown!

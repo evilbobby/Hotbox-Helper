@@ -27,6 +27,7 @@
 			<string>NSTextField</string>
 			<string>NSTextFieldCell</string>
 			<string>NSTextView</string>
+			<string>NSUserDefaultsController</string>
 			<string>NSView</string>
 			<string>NSWindowTemplate</string>
 		</array>
@@ -98,6 +99,7 @@
 								</object>
 								<object class="NSMenuItem" id="180299531">
 									<reference key="NSMenu" ref="110575045"/>
+									<bool key="NSIsHidden">YES</bool>
 									<string key="NSTitle">Advanced...</string>
 									<string key="NSKeyEquiv">=</string>
 									<int key="NSKeyEquivModMask">1048576</int>
@@ -785,6 +787,7 @@
 												<string key="NSFrame">{{279, 22}, {20, 18}}</string>
 												<reference key="NSSuperview" ref="364934238"/>
 												<reference key="NSWindow"/>
+												<reference key="NSNextKeyView"/>
 												<string key="NSReuseIdentifierKey">_NS:9</string>
 												<bool key="NSEnabled">YES</bool>
 												<object class="NSLevelIndicatorCell" key="NSCell" id="529053278">
@@ -1540,22 +1543,21 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 					<reference key="NSNextResponder"/>
 					<int key="NSvFlags">256</int>
 					<array class="NSMutableArray" key="NSSubviews">
-						<object class="NSButton" id="789755994">
+						<object class="NSButton" id="103381242">
 							<reference key="NSNextResponder" ref="1005684328"/>
 							<int key="NSvFlags">268</int>
-							<string key="NSFrame">{{14, 13}, {97, 32}}</string>
+							<string key="NSFrame">{{14, 13}, {125, 32}}</string>
 							<reference key="NSSuperview" ref="1005684328"/>
 							<reference key="NSWindow"/>
-							<reference key="NSNextKeyView"/>
 							<string key="NSReuseIdentifierKey">_NS:9</string>
 							<bool key="NSEnabled">YES</bool>
-							<object class="NSButtonCell" key="NSCell" id="337819564">
+							<object class="NSButtonCell" key="NSCell" id="646475738">
 								<int key="NSCellFlags">67108864</int>
 								<int key="NSCellFlags2">134217728</int>
-								<string key="NSContents">NextStep</string>
+								<string key="NSContents">Force Archive</string>
 								<reference key="NSSupport" ref="563829712"/>
 								<string key="NSCellIdentifier">_NS:9</string>
-								<reference key="NSControlView" ref="789755994"/>
+								<reference key="NSControlView" ref="103381242"/>
 								<int key="NSButtonFlags">-2038284288</int>
 								<int key="NSButtonFlags2">129</int>
 								<string key="NSAlternateContents"/>
@@ -1569,12 +1571,15 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 					<string key="NSFrameSize">{425, 61}</string>
 					<reference key="NSSuperview"/>
 					<reference key="NSWindow"/>
-					<reference key="NSNextKeyView" ref="789755994"/>
+					<reference key="NSNextKeyView"/>
 					<string key="NSReuseIdentifierKey">_NS:20</string>
 				</object>
 				<string key="NSScreenRect">{{0, 0}, {1920, 1178}}</string>
 				<string key="NSMaxSize">{10000000000000, 10000000000000}</string>
 				<bool key="NSWindowIsRestorable">NO</bool>
+			</object>
+			<object class="NSUserDefaultsController" id="100671261">
+				<bool key="NSSharedInstance">YES</bool>
 			</object>
 		</array>
 		<object class="IBObjectContainer" key="IBDocument.Objects">
@@ -1972,20 +1977,80 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 					<int key="connectionID">689</int>
 				</object>
 				<object class="IBConnectionRecord">
-					<object class="IBActionConnection" key="connection">
-						<string key="label">nextStep:</string>
-						<reference key="source" ref="976324537"/>
-						<reference key="destination" ref="789755994"/>
-					</object>
-					<int key="connectionID">697</int>
-				</object>
-				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
 						<string key="label">ImagePrepIndicator</string>
 						<reference key="source" ref="976324537"/>
 						<reference key="destination" ref="97498833"/>
 					</object>
 					<int key="connectionID">702</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">forceArchive:</string>
+						<reference key="source" ref="976324537"/>
+						<reference key="destination" ref="103381242"/>
+					</object>
+					<int key="connectionID">712</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">existsTextField</string>
+						<reference key="source" ref="976324537"/>
+						<reference key="destination" ref="196659460"/>
+					</object>
+					<int key="connectionID">713</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">cancelFilesExist:</string>
+						<reference key="source" ref="976324537"/>
+						<reference key="destination" ref="1001458399"/>
+					</object>
+					<int key="connectionID">714</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">continueFilesExist:</string>
+						<reference key="source" ref="976324537"/>
+						<reference key="destination" ref="256509519"/>
+					</object>
+					<int key="connectionID">715</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">value: existsNumber</string>
+						<reference key="source" ref="196659460"/>
+						<reference key="destination" ref="976324537"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="196659460"/>
+							<reference key="NSDestination" ref="976324537"/>
+							<string key="NSLabel">value: existsNumber</string>
+							<string key="NSBinding">value</string>
+							<string key="NSKeyPath">existsNumber</string>
+							<object class="NSDictionary" key="NSOptions">
+								<string key="NS.key.0">NSContinuouslyUpdatesValue</string>
+								<boolean value="YES" key="NS.object.0"/>
+							</object>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">709</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">selectedValue: existsSelection</string>
+						<reference key="source" ref="115992132"/>
+						<reference key="destination" ref="976324537"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="115992132"/>
+							<reference key="NSDestination" ref="976324537"/>
+							<string key="NSLabel">selectedValue: existsSelection</string>
+							<string key="NSBinding">selectedValue</string>
+							<string key="NSKeyPath">existsSelection</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">704</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
@@ -2818,22 +2883,9 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						<int key="objectID">691</int>
 						<reference key="object" ref="1005684328"/>
 						<array class="NSMutableArray" key="children">
-							<reference ref="789755994"/>
+							<reference ref="103381242"/>
 						</array>
 						<reference key="parent" ref="220781893"/>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">692</int>
-						<reference key="object" ref="789755994"/>
-						<array class="NSMutableArray" key="children">
-							<reference ref="337819564"/>
-						</array>
-						<reference key="parent" ref="1005684328"/>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">693</int>
-						<reference key="object" ref="337819564"/>
-						<reference key="parent" ref="789755994"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">694</int>
@@ -2866,6 +2918,24 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						<int key="objectID">701</int>
 						<reference key="object" ref="529053278"/>
 						<reference key="parent" ref="97498833"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">705</int>
+						<reference key="object" ref="100671261"/>
+						<reference key="parent" ref="0"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">710</int>
+						<reference key="object" ref="103381242"/>
+						<array class="NSMutableArray" key="children">
+							<reference ref="646475738"/>
+						</array>
+						<reference key="parent" ref="1005684328"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">711</int>
+						<reference key="object" ref="646475738"/>
+						<reference key="parent" ref="103381242"/>
 					</object>
 				</array>
 			</object>
@@ -2999,13 +3069,14 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 				<string key="690.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<boolean value="NO" key="690.NSWindowTemplate.visibleAtLaunch"/>
 				<string key="691.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
-				<string key="692.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
-				<string key="693.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="694.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="698.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="699.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="700.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="701.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="705.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="710.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="711.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="72.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="73.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="79.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -3017,7 +3088,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">702</int>
+			<int key="maxID">715</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -3031,15 +3102,17 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						<string key="applicationShouldTerminate:">id</string>
 						<string key="applicationWillFinishLaunching:">id</string>
 						<string key="archiveButtonPress:">id</string>
+						<string key="cancelFilesExist:">id</string>
 						<string key="changeRawFolderloc:">id</string>
 						<string key="changeSaveFolderloc:">id</string>
 						<string key="checkCacheFolders:">id</string>
 						<string key="checkDroplets:">id</string>
+						<string key="continueFilesExist:">id</string>
 						<string key="doubleCheckNo:">id</string>
 						<string key="doubleCheckYes:">id</string>
 						<string key="dropletButtons:">id</string>
+						<string key="forceArchive:">id</string>
 						<string key="newButtonPress:">id</string>
-						<string key="nextStep:">id</string>
 						<string key="pauseButton:">id</string>
 						<string key="retrieveDefaults:">id</string>
 						<string key="reviseButtonPress:">id</string>
@@ -3071,6 +3144,10 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 							<string key="name">archiveButtonPress:</string>
 							<string key="candidateClassName">id</string>
 						</object>
+						<object class="IBActionInfo" key="cancelFilesExist:">
+							<string key="name">cancelFilesExist:</string>
+							<string key="candidateClassName">id</string>
+						</object>
 						<object class="IBActionInfo" key="changeRawFolderloc:">
 							<string key="name">changeRawFolderloc:</string>
 							<string key="candidateClassName">id</string>
@@ -3087,6 +3164,10 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 							<string key="name">checkDroplets:</string>
 							<string key="candidateClassName">id</string>
 						</object>
+						<object class="IBActionInfo" key="continueFilesExist:">
+							<string key="name">continueFilesExist:</string>
+							<string key="candidateClassName">id</string>
+						</object>
 						<object class="IBActionInfo" key="doubleCheckNo:">
 							<string key="name">doubleCheckNo:</string>
 							<string key="candidateClassName">id</string>
@@ -3099,12 +3180,12 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 							<string key="name">dropletButtons:</string>
 							<string key="candidateClassName">id</string>
 						</object>
-						<object class="IBActionInfo" key="newButtonPress:">
-							<string key="name">newButtonPress:</string>
+						<object class="IBActionInfo" key="forceArchive:">
+							<string key="name">forceArchive:</string>
 							<string key="candidateClassName">id</string>
 						</object>
-						<object class="IBActionInfo" key="nextStep:">
-							<string key="name">nextStep:</string>
+						<object class="IBActionInfo" key="newButtonPress:">
+							<string key="name">newButtonPress:</string>
 							<string key="candidateClassName">id</string>
 						</object>
 						<object class="IBActionInfo" key="pauseButton:">
@@ -3148,6 +3229,8 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						<string key="drop1Indicator">id</string>
 						<string key="drop2Indicator">id</string>
 						<string key="drop3Indicator">id</string>
+						<string key="existsNumber">id</string>
+						<string key="existsTextField">id</string>
 						<string key="existsWindow">id</string>
 						<string key="mainNewbutton">id</string>
 						<string key="mainPauseButton">id</string>
@@ -3233,6 +3316,14 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						</object>
 						<object class="IBToOneOutletInfo" key="drop3Indicator">
 							<string key="name">drop3Indicator</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="existsNumber">
+							<string key="name">existsNumber</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="existsTextField">
+							<string key="name">existsTextField</string>
 							<string key="candidateClassName">id</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="existsWindow">
