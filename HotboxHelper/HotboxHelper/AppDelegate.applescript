@@ -127,7 +127,7 @@ script AppDelegate
         tell MainBar1 to stopAnimation_(me)
         tell mainPauseButton to setTitle_("Start")
         tell mainPauseButton to setEnabled_(1)
-        tell ArchiveButton to setEnabled_(0)
+        enableArchive(false)
         tell mainNewbutton to setEnabled_(0)
         tell mainRevisebutton to setEnabled_(0)
         
@@ -138,6 +138,7 @@ script AppDelegate
     on requestRevise()
         set requestSel to "R"
         set userRequest to true
+        enableArchive(false)
         --disable buttons so the user cant press them until the request is finished
         if isPaused is true or finishedProcessing is true then quietUserRequest()
     end requestRevise
@@ -146,8 +147,8 @@ script AppDelegate
     on requestNew()
         set requestSel to "N"
         set userRequest to true
+        enableArchive(false)
         --disable buttons so the user cant press them until the request is finished
-        tell ArchiveButton to setEnabled_(0)
         tell mainRevisebutton to setEnabled_(0)
         tell mainNewbutton to setEnabled_(0)
         if isPaused is true or finishedProcessing is true then quietUserRequest()
@@ -194,7 +195,6 @@ script AppDelegate
     --REVISE AFTER THE USER CLICK YES!
     on processRevised()
         log_event("Revise...Process the revised Image")
-        tell ArchiveButton to setEnabled_(0)
         tell mainRevisebutton to setEnabled_(0)
         showTempProgress("Preparing to Revise...",4,0)
         delay 0.5
@@ -737,7 +737,7 @@ script AppDelegate
         else if meFinished = true then
             --Now that we've finished processing enable all buttons
             set finishedProcessing to true
-            tell ArchiveButton to setEnabled_(1)
+            enableArchive(true)
             tell mainRevisebutton to setEnabled_(1)
             set meFinished to false
             --diable the main pause button until we archive
@@ -757,6 +757,7 @@ script AppDelegate
     on startArchive()
         --try to close the swf preview window
         closeSwfPreview()
+        enableArchive(false)
         
         set curTempMaxValue to 9
         log_event("Archiving...")
@@ -875,6 +876,7 @@ script AppDelegate
     
     --FINISHED!
     on doneArchive()
+        enableArchive(false)
         set CurrentImageNumber to null
         set OriginalImageNumber to null
         set overwrite to false
@@ -884,9 +886,11 @@ script AppDelegate
         delay 1.5
         hideTempProgress()
         --if the zip saved sucessfully then clear the cache, otherwise let the user try again
-        if saved = true then
-            performSelector_withObject_afterDelay_("StartClearCache", missing value, 0.1)
+        if saved is not true then
+            display dialog "The image failed to save properly. Please try again." buttons ("Ok") default button 1 with icon (2)
         end if
+        --clear the cache regaurdless of it it saved
+        performSelector_withObject_afterDelay_("StartClearCache", missing value, 0.1)
         --reset saved for next use
         set saved to false
     end doneArchive
@@ -1082,7 +1086,7 @@ script AppDelegate
     on cancelFilesExist_(sender)
         log_event("Car Number exists...user canceled")
         closeFilesExistWindow()
-        tell ArchiveButton to setEnabled_(1)
+        enableArchive(true)
     end calcelFilesExist_
     
     on continueFilesExist_(sender)
@@ -1119,6 +1123,15 @@ script AppDelegate
         set OriginalImageNumber to CurrentImageNumber
         performSelector_withObject_afterDelay_("startArchive", missing value, 0.01)
     end forceArchive_
+    
+    --ENABLE OR DISABLE THE ARCHIVE BUTTON (TRUE/FALSE)
+    on enableArchive(state)
+        if state = true then
+            tell ArchiveButton to setEnabled_(1)
+        else
+            tell ArchiveButton to setEnabled_(0)
+        end if
+    end enableArchive
     
     (* ======================================================================
                             Handlers for startup & shutdown!
