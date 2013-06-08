@@ -96,7 +96,8 @@ script AppDelegate
     property Imageprepexists : false
     property files_exist : false
     property NumberChanged : false
-    property saved : false
+    property saved : true
+    property ViewFinder : "ViewFinder"
     
     (* ======================================================================
                             Handlers for Processing!
@@ -233,31 +234,39 @@ script AppDelegate
     
     --TRY TO OPEN THE VIEWFINDER
     on openViewfinder()
-        log_event("Try to open ViewFinder app...")
-        try
-            set VFopen to false
-            tell application "System Events"
-                tell application "ViewFinder Mac 7.4.5.app"
-                    try
-                        activate window "Camera Files"
-                        set VFopen to true
-                    end try
-                end tell
-                if VFopen = false then
-                    try
-                        set visible of process ViewFinder to true
-                    end try
-                end if
+        log_event("Open ViewFinder app...")
+        set VFopen to false
+        
+        --Try to bring the viewfinder to the front
+        tell application "System Events"
+            try
+                set visible of process ViewFinder to true
+            on error errmsg
+                set VFopen to true
+                log_event("Open ViewFinder app...SYSTEM EVENTS FAILED TO SET VISIBLE OF PROCESS")
+            end try
+        end tell
+        
+        --if that didn't work lets try activating the camera files window
+        if VFopen = true then
+            tell application "ViewFinder Mac 7.4.5.app"
+                try
+                    activate window "Camera Files"
+                on error errmsg
+                    log_event("Open ViewFinder app...VIEWFINDER APP FAILED TO ACTIVATE CAMERA FILES WINDOW")
+                end try
             end tell
-        end try
+        end if
     end openViewfinder
     
     --TRY TO CLOSE THE VIEWFINDER
     on closeViewFinder()
-        log_event("Try to close ViewFinder app...")
+        log_event("Close ViewFinder app...")
         tell application "System Events"
             try
                 set visible of process ViewFinder to false
+            on error errmsg
+                log_event("Close ViewFinder app...FAILED")
             end try
         end tell
     end closeViewFinder
@@ -806,7 +815,7 @@ script AppDelegate
     end CheckExists
     
     on doArchive()
-        log_event("Archiving... Started")
+        log_event("Archiving...Started")
         
         log_event("Archiving...Preparing files")
         tempProgressUpdate(1,"Renaming Files in Cache...")
@@ -841,7 +850,9 @@ script AppDelegate
         try
             set zippath to rawFolderloc & CurrentImageNumber & ".zip" as string
             do shell script "zip -r -jr " & quoted form of POSIX path of (zippath) & " " & quoted form of POSIX path of (Pretransfer_folder)
-            set saved to true
+        on error errmsg
+            log_event("Archiving...FAILED TO CREATE ZIP")
+            set saved to false
         end try
         delay 0.1
         
@@ -869,7 +880,12 @@ script AppDelegate
         log_event("Archiving...Transfer final image to save folder")
         tempProgressUpdate(1,"Transfer final image to save folder...")
         delay 0.05
-        do shell script "mv " & POSIX path of (RemapTilt_folder & "*" as string) & " " & POSIX path of (saveFolderloc & CurrentImageNumber as string)
+        try
+            do shell script "mv -f " & POSIX path of (RemapTilt_folder & "*" as string) & " " & POSIX path of (saveFolderloc & CurrentImageNumber as string)
+        on error errmsg
+            log_event("Archiving...FAILED TO MOVE FINAL IMAGE TO SAVED FOLDER")
+            set saved to false
+        end try
         
         performSelector_withObject_afterDelay_("doneArchive", missing value, 0.01)
     end doArchive
@@ -886,13 +902,15 @@ script AppDelegate
         delay 1.5
         hideTempProgress()
         --if the zip saved sucessfully then clear the cache, otherwise let the user try again
-        if saved is not true then
+        if saved = true then
+            display dialog "Archving Complete!" buttons ("Ok") default button 1 with icon (1)
+        else
             display dialog "The image failed to save properly. Please try again." buttons ("Ok") default button 1 with icon (2)
         end if
         --clear the cache regaurdless of it it saved
         performSelector_withObject_afterDelay_("StartClearCache", missing value, 0.1)
         --reset saved for next use
-        set saved to false
+        set saved to true
     end doneArchive
     
     on OverwriteResume()
