@@ -735,6 +735,7 @@ script AppDelegate
             tell application "Safari"
                 make new document with properties {URL:""}
                 open theSwf
+                activate
             end tell
             if meFinished is false then updateMain("Processing Finished",1)
             set meFinished to true
@@ -786,7 +787,7 @@ script AppDelegate
         tempProgressUpdate(1,"Checking if files already exists in save locations...")
         try
             tell application "Finder" to set Completed_folder_contents to (entire contents of ((saveFolderloc & CurrentImageNumber & ":" as string) as alias) as text)
-            if Completed_folder_contents contains "-edc-" or Completed_folder_contents contains "-edo-" or Completed_folder_contents contains "-top-" then set files_exist to true
+            if Completed_folder_contents contains "-int." then set files_exist to true
         end try
         try
             tell application "Finder" to set zip_folder_contents to (entire contents of (rawFolderloc as alias) as text)
@@ -898,23 +899,29 @@ script AppDelegate
         set overwrite to false
         set NumberChanged to false
         tempProgressUpdate(1,"Finished Archiving.")
-        log_event("Archiving...Done!")
         delay 1.5
         hideTempProgress()
+        --Log the status of the saved state
+        log_event("State...Saved is currently " & saved as text)
         --if the zip saved sucessfully then clear the cache, otherwise let the user try again
         if saved = true then
+            log_event("Display dialog...Archiving Complete!")
             display dialog "Archving Complete!" buttons ("Ok") default button 1 with icon (1)
         else
-            display dialog "The image failed to save properly. Please try again." buttons ("Ok") default button 1 with icon (2)
+            log_event("Display dialog...The image failed to save properly. Please restart.")
+            display dialog "The image failed to save properly. Please restart." buttons ("Ok") default button 1 with icon (2)
         end if
-        --clear the cache regaurdless of it it saved
-        performSelector_withObject_afterDelay_("StartClearCache", missing value, 0.1)
         --reset saved for next use
         set saved to true
+        --clear the cache regaurdless of it it saved
+        performSelector_withObject_afterDelay_("StartClearCache", missing value, 1)
+        log_event("Archiving...Done!")
     end doneArchive
     
     on OverwriteResume()
         tell tempWindow to showOver_(MainWindow)
+        --set overwrite to true
+        set overwrite to true
         performSelector_withObject_afterDelay_("doArchive", missing value, 0.3)
     end OverwriteResume
         
@@ -1112,8 +1119,6 @@ script AppDelegate
         --Check what the user indicated to do via radio buttons
         if existsSelection as string = "Overwrite" then
             log_event("Car Number exists...Overwrite")
-            --set overwrite
-            set overwrite to true
             set CurrentImageNumber to OriginalImageNumber
             --move on to next step and overwrite
             closeFilesExistWindow()
@@ -1136,11 +1141,24 @@ script AppDelegate
         end if
     end continueFilesExist_
     
+    on toggleExistsTextField_(sender)
+        if existsSelection as text is "Change Car Number:" then
+            tell existsTextField to setEnabled_(1)
+        else
+            tell existsTextField to setEnabled_(0)
+        end if
+    end toggleExists_
+    
     on forceArchive_(sender)
         set CurrentImageNumber to 1234567890 as string
         set OriginalImageNumber to CurrentImageNumber
         performSelector_withObject_afterDelay_("startArchive", missing value, 0.01)
     end forceArchive_
+    
+    on forceShowFilesExistWindow_(sender)
+        set CurrentImageNumber to "10000000001"
+        showFilesExistWindow()
+    end forceShowFilesExistWindow_
     
     --ENABLE OR DISABLE THE ARCHIVE BUTTON (TRUE/FALSE)
     on enableArchive(state)

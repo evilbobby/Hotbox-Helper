@@ -99,7 +99,7 @@
 								</object>
 								<object class="NSMenuItem" id="180299531">
 									<reference key="NSMenu" ref="110575045"/>
-									<bool key="NSIsHidden">YES</bool>
+									<bool key="NSIsDisabled">YES</bool>
 									<string key="NSTitle">Advanced...</string>
 									<string key="NSKeyEquiv">=</string>
 									<int key="NSKeyEquivModMask">1048576</int>
@@ -1224,7 +1224,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 							<string key="NSReuseIdentifierKey">_NS:9</string>
 							<bool key="NSEnabled">YES</bool>
 							<object class="NSTextFieldCell" key="NSCell" id="973332274">
-								<int key="NSCellFlags">-1804599231</int>
+								<int key="NSCellFlags">-1267728319</int>
 								<int key="NSCellFlags2">272630784</int>
 								<string key="NSContents"/>
 								<reference key="NSSupport" ref="563829712"/>
@@ -1551,6 +1551,30 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 								<reference key="NSSupport" ref="563829712"/>
 								<string key="NSCellIdentifier">_NS:9</string>
 								<reference key="NSControlView" ref="103381242"/>
+								<int key="NSButtonFlags">-2038284288</int>
+								<int key="NSButtonFlags2">129</int>
+								<string key="NSAlternateContents"/>
+								<string key="NSKeyEquivalent"/>
+								<int key="NSPeriodicDelay">200</int>
+								<int key="NSPeriodicInterval">25</int>
+							</object>
+							<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
+						</object>
+						<object class="NSButton" id="460580090">
+							<reference key="NSNextResponder" ref="1005684328"/>
+							<int key="NSvFlags">268</int>
+							<string key="NSFrame">{{173, 13}, {220, 32}}</string>
+							<reference key="NSSuperview" ref="1005684328"/>
+							<reference key="NSWindow"/>
+							<string key="NSReuseIdentifierKey">_NS:9</string>
+							<bool key="NSEnabled">YES</bool>
+							<object class="NSButtonCell" key="NSCell" id="911986610">
+								<int key="NSCellFlags">67108864</int>
+								<int key="NSCellFlags2">134217728</int>
+								<string key="NSContents">forceShowFilesExistWindow_</string>
+								<reference key="NSSupport" ref="563829712"/>
+								<string key="NSCellIdentifier">_NS:9</string>
+								<reference key="NSControlView" ref="460580090"/>
 								<int key="NSButtonFlags">-2038284288</int>
 								<int key="NSButtonFlags2">129</int>
 								<string key="NSAlternateContents"/>
@@ -2007,6 +2031,22 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						<reference key="destination" ref="256509519"/>
 					</object>
 					<int key="connectionID">715</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">forceShowFilesExistWindow:</string>
+						<reference key="source" ref="976324537"/>
+						<reference key="destination" ref="460580090"/>
+					</object>
+					<int key="connectionID">718</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">toggleExistsTextField:</string>
+						<reference key="source" ref="976324537"/>
+						<reference key="destination" ref="115992132"/>
+					</object>
+					<int key="connectionID">719</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
@@ -2876,6 +2916,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						<reference key="object" ref="1005684328"/>
 						<array class="NSMutableArray" key="children">
 							<reference ref="103381242"/>
+							<reference ref="460580090"/>
 						</array>
 						<reference key="parent" ref="220781893"/>
 					</object>
@@ -2928,6 +2969,19 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						<int key="objectID">711</int>
 						<reference key="object" ref="646475738"/>
 						<reference key="parent" ref="103381242"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">716</int>
+						<reference key="object" ref="460580090"/>
+						<array class="NSMutableArray" key="children">
+							<reference ref="911986610"/>
+						</array>
+						<reference key="parent" ref="1005684328"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">717</int>
+						<reference key="object" ref="911986610"/>
+						<reference key="parent" ref="460580090"/>
 					</object>
 				</array>
 			</object>
@@ -3069,6 +3123,8 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 				<string key="705.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="710.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="711.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="716.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="717.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="72.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="73.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="79.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -3080,7 +3136,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">715</int>
+			<int key="maxID">719</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -3104,12 +3160,14 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						<string key="doubleCheckYes:">id</string>
 						<string key="dropletButtons:">id</string>
 						<string key="forceArchive:">id</string>
+						<string key="forceShowFilesExistWindow:">id</string>
 						<string key="newButtonPress:">id</string>
 						<string key="pauseButton:">id</string>
 						<string key="retrieveDefaults:">id</string>
 						<string key="reviseButtonPress:">id</string>
 						<string key="showRawFolder:">id</string>
 						<string key="showSaveFolder:">id</string>
+						<string key="toggleExistsTextField:">id</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
 						<object class="IBActionInfo" key="CancelClearCacheButton:">
@@ -3176,6 +3234,10 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 							<string key="name">forceArchive:</string>
 							<string key="candidateClassName">id</string>
 						</object>
+						<object class="IBActionInfo" key="forceShowFilesExistWindow:">
+							<string key="name">forceShowFilesExistWindow:</string>
+							<string key="candidateClassName">id</string>
+						</object>
 						<object class="IBActionInfo" key="newButtonPress:">
 							<string key="name">newButtonPress:</string>
 							<string key="candidateClassName">id</string>
@@ -3198,6 +3260,10 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						</object>
 						<object class="IBActionInfo" key="showSaveFolder:">
 							<string key="name">showSaveFolder:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="toggleExistsTextField:">
+							<string key="name">toggleExistsTextField:</string>
 							<string key="candidateClassName">id</string>
 						</object>
 					</dictionary>
