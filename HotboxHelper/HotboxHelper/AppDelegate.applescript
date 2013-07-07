@@ -243,7 +243,7 @@ script AppDelegate
                 set visible of process ViewFinder to true
             on error errmsg
                 set VFopen to true
-                log_event("Open ViewFinder app...SYSTEM EVENTS FAILED TO SET VISIBLE OF PROCESS")
+                tell me to log_event("Open ViewFinder app...SYSTEM EVENTS FAILED TO SET VISIBLE OF PROCESS")
             end try
         end tell
         
@@ -253,7 +253,7 @@ script AppDelegate
                 try
                     activate window "Camera Files"
                 on error errmsg
-                    log_event("Open ViewFinder app...VIEWFINDER APP FAILED TO ACTIVATE CAMERA FILES WINDOW")
+                    tell me to log_event("Open ViewFinder app...VIEWFINDER APP FAILED TO ACTIVATE CAMERA FILES WINDOW")
                 end try
             end tell
         end if
@@ -266,7 +266,7 @@ script AppDelegate
             try
                 set visible of process ViewFinder to false
             on error errmsg
-                log_event("Close ViewFinder app...FAILED")
+                tell me to log_event("Close ViewFinder app...FAILED")
             end try
         end tell
     end closeViewFinder
@@ -367,7 +367,7 @@ script AppDelegate
                 delay 1
                 set CheckFile_size2 to physical size of CheckFile
             on error errmsg
-                log "Checking File State...File does NOT exist"
+                tell me to log "Checking File State...File does NOT exist"
             end try
         end tell
         
@@ -906,10 +906,14 @@ script AppDelegate
         --if the zip saved sucessfully then clear the cache, otherwise let the user try again
         if saved = true then
             log_event("Display dialog...Archiving Complete!")
-            display dialog "Archving Complete!" buttons ("Ok") default button 1 with icon (1)
+            try
+                display dialog "Archving Complete!" buttons ("Ok") default button 1 with icon (1)
+            end try
         else
             log_event("Display dialog...The image failed to save properly. Please restart.")
-            display dialog "The image failed to save properly. Please restart." buttons ("Ok") default button 1 with icon (2)
+            try
+                display dialog "The image failed to save properly. Please restart." buttons ("Ok") default button 1 with icon (2)
+            end try
         end if
         --reset saved for next use
         set saved to true
