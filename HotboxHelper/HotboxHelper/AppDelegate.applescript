@@ -98,6 +98,7 @@ script AppDelegate
     property NumberChanged : false
     property saved : true
     property ViewFinder : "ViewFinder"
+    property theLocation : null
     
     (* ======================================================================
                             Handlers for Processing!
@@ -769,6 +770,7 @@ script AppDelegate
         closeSwfPreview()
         enableArchive(false)
         
+        set theLocation to null
         set curTempMaxValue to 9
         log_event("Archiving...")
         log_event("Archiving...Preparing")
@@ -788,15 +790,22 @@ script AppDelegate
         try
             tell application "Finder" to set Completed_folder_contents to (entire contents of ((saveFolderloc & CurrentImageNumber & ":" as string) as alias) as text)
             if Completed_folder_contents contains "-int." then set files_exist to true
+            set theLocation to "SaveFolder"
         end try
         try
             tell application "Finder" to set zip_folder_contents to (entire contents of (rawFolderloc as alias) as text)
             if zip_folder_contents contains (CurrentImageNumber & ".zip" as string) then set files_exist to true
+            --if thelocation has already been set then add the folder to it
+            if thelocation is null then
+                set theLocation to "RawFolder"
+            else
+                set theLocation to theLocation & " and RawFolder" as string
+            end if
         end try
         
         --if files exists ask the user, else continue archiving
         if files_exist is true and NumberChanged is true then
-            log_event("Archiving...images exist")
+            log_event("Archiving...images exist at " & theLocation)
             log_event("Archiving...Number already changed, ask to overwrite")
             set files_exist to false
             set NumberChanged to false
@@ -804,7 +813,7 @@ script AppDelegate
             delay 0.3
             areYouSure(CurrentImageNumber & " exists. overwrite anyways?","OverwriteResume","startArchive")
         else if files_exist is true then
-            log_event("Archiving...images exist")
+            log_event("Archiving...images exist at " & theLocation)
             set files_exist to false
             hideTempProgress()
             delay 0.3
