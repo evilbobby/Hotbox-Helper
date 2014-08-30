@@ -92,6 +92,7 @@ script AppDelegate
     property DropletBuildswf : null
     property ImagePrep : null
     property Photoshop : "Adobe Photoshop CS6"
+    --property Photoshop : "Adobe Photoshop CC 2014"
     property ImagePrepIndicator : missing value
     property Imageprepexists : false
     property files_exist : false
@@ -957,6 +958,8 @@ script AppDelegate
         tell current application's NSUserDefaults to set defaults to standardUserDefaults()
         tell defaults to registerDefaults_({saveFolderloc:((path to desktop)as string),rawFolderloc:((path to desktop)as string)})
         retrieveDefaults_(me)
+        --launch photoshop
+        launchPhotoshop()
         --set pause button to "Start" in begining
         tell mainPauseButton to setTitle_("Start")
         
@@ -1266,6 +1269,29 @@ script AppDelegate
         
         log_event("Checking for Droplets...Finished")
     end checkDroplets_
+    
+    --LAUNCH PHOTOSHOP ON BOOT
+    on launchPhotoshop()
+        --launch photoshop
+        log_event("Launching Photoshop...")
+        tell application photoshop
+            try
+                open
+            end try
+        end tell
+        --wait for photoshop to open
+        log_event("Waiting for photoshop to open...")
+        delay 5
+        --try to Hide photoshop
+        try
+            log_event("Try to hide Photoshop...")
+            tell application "System Events"
+                if process Photoshop exists then
+                    set visible of process Photoshop to false
+                end if
+            end tell
+        end try
+    end launchPhotoshop
     
     --CHECK FOR IMAGE PREP
     on checkforImageprep()
